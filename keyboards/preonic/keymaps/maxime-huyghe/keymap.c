@@ -15,13 +15,75 @@
  */
 
 #include QMK_KEYBOARD_H
+// #include "../../rev3/rev3.h"
 #include "muse.h"
 
+
+// Unicode
+// Using unicode map instead of the simpler basic unicode for capitalisation support.
+
+// Allows definition of capitalizable keycodes without having to type the name a second time.
+#define _U(char) XP(char, C##char)
+
+// C = capital
+enum unicode_names {
+  EA,
+  CEA,
+  EG,
+  CEG,
+  EC,
+  CEC,
+  AG,
+  CAG,
+  AC,
+  CAC,
+  IT,
+  CIT,
+  OC,
+  COC,
+  UG,
+  CUG,
+  AE,
+  CAE,
+  OE,
+  COE,
+  CC,
+  CCC,
+};
+
+const uint32_t PROGMEM unicode_map[] = {
+  [EA] = L'é',
+  [CEA] = L'É',
+  [EG] = L'è',
+  [CEG] = L'È',
+  [EC] = L'ê',
+  [CEC] = L'Ê',
+  [AG] = L'à',
+  [CAG] = L'À',
+  [AC] = L'â',
+  [CAC] = L'Â',
+  [IT] = L'ï',
+  [CIT] = L'Ï',
+  [OC] = L'ô',
+  [COC] = L'Ô',
+  [UG] = L'ù',
+  [CUG] = L'Ù',
+  [AE] = L'æ',
+  [CAE] = L'Æ',
+  [OE] = L'œ',
+  [COE] = L'Œ',
+  [CC] = L'ç',
+  [CCC] = L'Ç',
+};
+
+
+// Layers
 enum preonic_layers {
   QWERTY,
   GAME,
   LOWER,
   RAISE,
+  UNCDE,
   BOTH,
   RGB_,
 };
@@ -30,7 +92,7 @@ enum preonic_layers {
 #define LWR_SPC LT(LOWER,KC_SPC)
 #define RSE_ENT LT(RAISE,KC_ENT)
 #define xxxxxxx KC_NO
-
+#define TERM_OF TERM_OFF
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [QWERTY] = LAYOUT_preonic_grid(
@@ -38,7 +100,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,  KC_Q,     KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,      KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
   KC_ESC,  KC_A,     KC_S,    KC_D,    KC_F,    KC_G,    KC_H,      KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   KC_LSPO, KC_Z,     KC_X,    KC_C,    KC_V,    KC_B,    KC_N,      KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSPC,
-  KC_LCTL, MO(RGB_), KC_LALT, KC_LGUI, LWR_SPC, LWR_SPC, MO(RAISE), RSE_ENT, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+  KC_LCTL, MO(RGB_), KC_LALT, KC_LGUI, LWR_SPC, LWR_SPC, MO(UNCDE), RSE_ENT, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
 
 
@@ -69,9 +131,18 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 
 
+[UNCDE] = LAYOUT_preonic_grid(
+  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, UC_MOD,
+  xxxxxxx, xxxxxxx, _U(EG),  _U(EA),  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
+  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
+  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
+  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx
+),
+
+
 [BOTH] = LAYOUT_preonic_grid(
   KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,    KC_F10,  KC_F11, TG(GAME),
-  xxxxxxx, RESET,   DEBUG,   xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, TERM_ON, TERM_OFF, xxxxxxx, xxxxxxx, xxxxxxx,
+  xxxxxxx, RESET,   DEBUG,   xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, TERM_ON, TERM_OF, xxxxxxx, xxxxxxx, xxxxxxx,
   xxxxxxx, xxxxxxx, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
   xxxxxxx, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
   xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, KC_F12
@@ -86,6 +157,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   xxxxxxx, _______, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx
 ),
 };
+
 
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 //   switch (keycode) {
