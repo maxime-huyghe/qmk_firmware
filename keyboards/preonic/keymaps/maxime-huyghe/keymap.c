@@ -17,8 +17,11 @@
 #include QMK_KEYBOARD_H
 #include "muse.h"
 
+
+// Layers
 enum preonic_layers {
   QWERTY,
+  CMPSE,
   GAME,
   LOWER,
   RAISE,
@@ -26,10 +29,27 @@ enum preonic_layers {
   RGB_,
 };
 
-// Keycode macros
+
+// Keycode aliases
 #define LWR_SPC LT(LOWER,KC_SPC)
 #define RSE_ENT LT(RAISE,KC_ENT)
 #define xxxxxxx KC_NO
+#define TERM_OF TERM_OFF
+
+// C = capital
+enum custom_keycodes {
+  EA = SAFE_RANGE,
+  EG,
+  EC,
+  AG,
+  AC,
+  IT,
+  OC,
+  UG,
+  AE,
+  OE,
+  CC,
+};
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
@@ -38,7 +58,16 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,  KC_Q,     KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,      KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
   KC_ESC,  KC_A,     KC_S,    KC_D,    KC_F,    KC_G,    KC_H,      KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   KC_LSPO, KC_Z,     KC_X,    KC_C,    KC_V,    KC_B,    KC_N,      KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSPC,
-  KC_LCTL, MO(RGB_), KC_LALT, KC_LGUI, LWR_SPC, LWR_SPC, MO(RAISE), RSE_ENT, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+  KC_LCTL, MO(RGB_), KC_LALT, KC_LGUI, LWR_SPC, LWR_SPC, MO(CMPSE), RSE_ENT, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
+),
+
+
+[CMPSE] = LAYOUT_preonic_grid(
+  _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
+  _______, EC,      EG,      EA,      _______, _______, _______, UG,      IT,      OC,      _______, _______,
+  _______, AG,      AC,      _______, _______, _______, _______, _______, _______, _______, _______, _______,
+  _______, AE,      OE,      CC,      _______, _______, _______, _______, CC,      _______, _______, _______,
+  _______, _______, _______, _______, _______, _______, xxxxxxx, _______, _______, _______, _______, _______
 ),
 
 
@@ -70,8 +99,8 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 
 [BOTH] = LAYOUT_preonic_grid(
-  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,    KC_F10,  KC_F11, TG(GAME),
-  xxxxxxx, RESET,   DEBUG,   xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, TERM_ON, TERM_OFF, xxxxxxx, xxxxxxx, xxxxxxx,
+  KC_F1,   KC_F2,   KC_F3,   KC_F4,   KC_F5,   KC_F6,   KC_F7,   KC_F8,   KC_F9,   KC_F10,  KC_F11, TG(GAME),
+  xxxxxxx, RESET,   DEBUG,   xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, TERM_ON, TERM_OF, xxxxxxx, xxxxxxx, xxxxxxx,
   xxxxxxx, xxxxxxx, MU_MOD,  AU_ON,   AU_OFF,  AG_NORM, AG_SWAP, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
   xxxxxxx, MUV_DE,  MUV_IN,  MU_ON,   MU_OFF,  MI_ON,   MI_OFF,  xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx,
   xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, xxxxxxx, KC_F12
@@ -87,49 +116,36 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 ),
 };
 
+
+// Macro to type accented characters with compose
+#define COMPOSE_MACRO(KEYCODE, CHAR, DIACRITIC) \
+    case KEYCODE: \
+        if (record->event.pressed) { \
+            uint8_t temp_mods = get_mods(); \
+            clear_mods(); \
+            if (temp_mods & (MOD_BIT(KC_LSFT) | MOD_BIT(KC_RSFT))) { \
+                SEND_STRING(SS_RALT(DIACRITIC SS_LSFT(CHAR))); \
+            } else { \
+                SEND_STRING(SS_RALT(DIACRITIC CHAR)); \
+            } \
+            set_mods(temp_mods); \
+        } \
+        break;
+
 bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-//   switch (keycode) {
-//         case LOWER:
-//           if (record->event.pressed) {
-//             layer_on(_LOWER);
-//             update_tri_layer(_LOWER, _RAISE, _ADJUST);
-//           } else {
-//             layer_off(_LOWER);
-//             update_tri_layer(_LOWER, _RAISE, _ADJUST);
-//           }
-//           return false;
-//           break;
-//         case RAISE:
-//           if (record->event.pressed) {
-//             layer_on(_RAISE);
-//             update_tri_layer(_LOWER, _RAISE, _ADJUST);
-//           } else {
-//             layer_off(_RAISE);
-//             update_tri_layer(_LOWER, _RAISE, _ADJUST);
-//           }
-//           return false;
-//           break;
-//         case BACKLIT:
-//           if (record->event.pressed) {
-//             register_code(KC_RSFT);
-//             #ifdef BACKLIGHT_ENABLE
-//               backlight_step();
-//             #endif
-//             #ifdef RGBLIGHT_ENABLE
-//               rgblight_step();
-//             #endif
-//             #ifdef __AVR__
-//             writePinLow(E6);
-//             #endif
-//           } else {
-//             unregister_code(KC_RSFT);
-//             #ifdef __AVR__
-//             writePinHigh(E6);
-//             #endif
-//           }
-//           return false;
-//           break;
-//       }
+    switch (keycode) {
+        COMPOSE_MACRO(EA, "e", "'");
+        COMPOSE_MACRO(EG, "e", "`");
+        COMPOSE_MACRO(EC, "e", "^");
+        COMPOSE_MACRO(AG, "a", "`");
+        COMPOSE_MACRO(AC, "a", "^");
+        COMPOSE_MACRO(IT, "i", "\"");
+        COMPOSE_MACRO(OC, "o", "^");
+        COMPOSE_MACRO(UG, "u", "`");
+        COMPOSE_MACRO(AE, "ae", "");
+        COMPOSE_MACRO(OE, "oe", "");
+        COMPOSE_MACRO(CC, "c", ",");
+    }
     return true;
 };
 
