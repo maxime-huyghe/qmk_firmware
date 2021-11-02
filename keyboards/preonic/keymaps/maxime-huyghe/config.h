@@ -16,6 +16,9 @@
 
 #pragma once
 
+#define IGNORE_MOD_TAP_INTERRUPT
+// #define PERMISSIVE_HOLD
+
 #ifdef AUDIO_ENABLE
 #    define STARTUP_SONG SONG(PREONIC_SOUND)
 // #define STARTUP_SONG SONG(NO_SOUND)

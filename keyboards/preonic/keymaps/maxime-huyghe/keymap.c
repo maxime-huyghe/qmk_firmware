@@ -36,6 +36,18 @@ enum preonic_layers {
 #define xxxxxxx KC_NO
 #define TERM_OF TERM_OFF
 
+// Left-hand home row mods
+#define GUI_A LGUI_T(KC_A)
+#define ALT_S LALT_T(KC_S)
+#define CTL_D LCTL_T(KC_D)
+#define SFT_F LSFT_T(KC_F)
+
+// Right-hand home row mods
+#define SFT_J RSFT_T(KC_J)
+#define CTL_K RCTL_T(KC_K)
+#define ALT_L LALT_T(KC_L)
+#define GUI_SCL RGUI_T(KC_SCLN)
+
 // C = capital
 enum custom_keycodes {
   EA = SAFE_RANGE,
@@ -46,6 +58,7 @@ enum custom_keycodes {
   IT,
   OC,
   UG,
+  UC,
   AE,
   OE,
   CC,
@@ -56,7 +69,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 [QWERTY] = LAYOUT_preonic_grid(
   KC_GRV,  KC_1,     KC_2,    KC_3,    KC_4,    KC_5,    KC_6,      KC_7,    KC_8,    KC_9,    KC_0,    KC_DEL,
   KC_TAB,  KC_Q,     KC_W,    KC_E,    KC_R,    KC_T,    KC_Y,      KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
-  KC_ESC,  KC_A,     KC_S,    KC_D,    KC_F,    KC_G,    KC_H,      KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
+  KC_ESC,  GUI_A,    ALT_S,   CTL_D,   SFT_F,   KC_G,    KC_H,      SFT_J,   CTL_K,   ALT_L,   GUI_SCL, KC_QUOT,
   KC_LSPO, KC_Z,     KC_X,    KC_C,    KC_V,    KC_B,    KC_N,      KC_M,    KC_COMM, KC_DOT,  KC_SLSH, KC_RSPC,
   KC_LCTL, MO(RGB_), KC_LALT, KC_LGUI, LWR_SPC, LWR_SPC, MO(CMPSE), RSE_ENT, KC_LEFT, KC_DOWN, KC_UP,   KC_RGHT
 ),
@@ -64,7 +77,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 
 [CMPSE] = LAYOUT_preonic_grid(
   _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______, _______,
-  _______, EC,      EG,      EA,      _______, _______, _______, UG,      IT,      OC,      _______, _______,
+  _______, ET,      EC,      EA,      EG,      _______, UC,      UG,      IT,      OC,      _______, _______,
   _______, AG,      AC,      _______, _______, _______, _______, _______, _______, _______, _______, _______,
   _______, AE,      OE,      CC,      _______, _______, _______, _______, CC,      _______, _______, _______,
   _______, _______, _______, _______, _______, _______, xxxxxxx, _______, _______, _______, _______, _______
@@ -76,7 +89,7 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   KC_TAB,  KC_Q,    KC_W,    KC_E,    KC_R,    KC_T,   KC_Y,      KC_U,    KC_I,    KC_O,    KC_P,    KC_BSPC,
   KC_ESC,  KC_A,    KC_S,    KC_D,    KC_F,    KC_G,   KC_H,      KC_J,    KC_K,    KC_L,    KC_SCLN, KC_QUOT,
   KC_LSFT, KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,   KC_N,      KC_M,    KC_COMM, KC_UP,   KC_SLSH, KC_RSFT,
-  KC_LCTL, _______, KC_LALT, KC_LGUI, KC_SPC,  KC_SPC, MO(RAISE), KC_ENT,  KC_LEFT, KC_DOWN, KC_RGHT, KC_DOT
+  KC_LCTL, _______, KC_LGUI, KC_LALT, KC_SPC,  KC_SPC, MO(RAISE), KC_ENT,  KC_LEFT, KC_DOWN, KC_RGHT, KC_DOT
 ),
 
 
@@ -137,11 +150,13 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
         COMPOSE_MACRO(EA, "e", "'");
         COMPOSE_MACRO(EG, "e", "`");
         COMPOSE_MACRO(EC, "e", "^");
+        COMPOSE_MACRO(ET, "e", "\"");
         COMPOSE_MACRO(AG, "a", "`");
         COMPOSE_MACRO(AC, "a", "^");
         COMPOSE_MACRO(IT, "i", "\"");
         COMPOSE_MACRO(OC, "o", "^");
         COMPOSE_MACRO(UG, "u", "`");
+        COMPOSE_MACRO(UC, "u", "^");
         COMPOSE_MACRO(AE, "ae", "");
         COMPOSE_MACRO(OE, "oe", "");
         COMPOSE_MACRO(CC, "c", ",");
